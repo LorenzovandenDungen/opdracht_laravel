@@ -28,7 +28,9 @@ class BierController extends Controller
         $bier = Bier::findOrFail($id);
 
         // Haal andere bieren van hetzelfde biermerk op
-        $andereBieren = Bier::where('valt_onder_id', $bier->valt_onder_id)->get();
+        $andereBieren = Bier::where('valt_onder_id', $bier->valt_onder_id)
+                            ->where('id', '!=', $id) // Hetzelfde bier uitsluiten
+                            ->get();
 
         // Retourneer de weergave met de data
         return view('bieren.andere', compact('bier', 'andereBieren'));
@@ -52,7 +54,7 @@ class BierController extends Controller
     public function merkenMetSubmerken()
     {
         // Haal alle hoofdmerken op die submerken hebben
-        $merken = Bier::has('submerken')->get();
+        $merken = Bier::has('submerken')->withCount('submerken')->get();
 
         // Retourneer de weergave met de data
         return view('bieren.met_submerken', compact('merken'));
